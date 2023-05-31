@@ -80,6 +80,7 @@ const GetFileView = (props) => {
                     : "btn btn-primary"
                 }
                 href={selectItem.path} rel="noreferrer"
+                onClick={closeView}
               >
                 download file and close
               </a>

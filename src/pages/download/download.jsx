@@ -9,6 +9,10 @@ function Download() {
     const [getFile, setGetFile] = useState(false);
     const [selectItem, setSelectItem] = useState();
     const [load, setLoad] = useState(false);
+    const [search, setSearch] = useState({
+        name: "",
+        keyword: ""
+    })
     const viewFile = (item)=>{
         setGetFile(!getFile)
         setSelectItem(item)
@@ -40,13 +44,15 @@ function Download() {
                 fileList={fileList}
                 />
         }
-      <form className="row">
+      <form className="row" onSubmit={e=>e.preventDefault()}>
         <div className="col-md-6">
           <input
             className="form-control"
             type="search"
             name="search"
             id="search"
+            value={search.name}
+            onChange={e=>setSearch({...search, name: e.target.value})}
             placeholder="Search..."
           />
         </div>
@@ -56,6 +62,8 @@ function Download() {
             type="text"
             name="key"
             id="key"
+            value={search.keyword}
+            onChange={e=>setSearch({...search, keyword: e.target.value})}
             placeholder="keyword..."
           />
         </div>
@@ -75,9 +83,15 @@ function Download() {
             </li>
         }
         {
-            fileList.map(file=>(
+            fileList.filter((item)=>{
+                if(search.name==="") return true;
+                return (item.name.toLowerCase().indexOf(search.name.toLowerCase()))>-1;
+              })
+            .map(file=>(
                 <li key={file.id} className="list-group-item" style={{ cursor: "pointer" }} onClick={()=>viewFile(file)}>
-                    {file.name}
+                    <div className="row">
+                        <h4 className="col">{file.name}</h4> <p className="col">{Date(file.createDate).slice(4, 25)}</p>
+                    </div>
                 </li>
             ))
         }

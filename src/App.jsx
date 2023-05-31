@@ -18,10 +18,10 @@ function App() {
   return (
     <Suspense fallback={
       <>
-        <div className="m-4 p-4">
-            <div className="spinner-border" role="status">
-                <span className="sr-only"></span>
-            </div>
+        <div className="p-3">
+          <div className="spinner-border" role="status">
+            <span className="sr-only"></span>
+          </div>
         </div>
       </>
     }>
