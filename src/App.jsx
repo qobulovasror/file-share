@@ -16,7 +16,15 @@ function App() {
     }
   }
   return (
-    <Suspense fallback={<>Loading</>}>
+    <Suspense fallback={
+      <>
+        <div className="m-4 p-4">
+            <div className="spinner-border" role="status">
+                <span className="sr-only"></span>
+            </div>
+        </div>
+      </>
+    }>
       <BrowserRouter>
       <ToastContainer/>
         <nav className="navbar bg-body-tertiary">

@@ -1,33 +1,32 @@
 import { useState, useEffect } from "react";
 import GetFileView from './GetFileView';
+import {db} from '../../config/firebase';
+import { collection, getDocs } from "firebase/firestore";
+import { toast } from "react-toastify";
 
 function Download() {
     const [fileList, setFileList] = useState([]);
     const [getFile, setGetFile] = useState(false);
     const [selectItem, setSelectItem] = useState();
+    const [load, setLoad] = useState(false);
     const viewFile = (item)=>{
         setGetFile(!getFile)
         setSelectItem(item)
     }
+    const getFileList = async () =>{
+        await getDocs(collection(db, "filePath"))
+        .then((querySnapshot)=>{               
+            const newData = querySnapshot.docs
+                .map((doc) => ({...doc.data(), id:doc.id }));
+                setFileList(newData)
+        })
+        .catch(err=>{
+          toast.error(err)
+        })
+    }
     useEffect(()=>{
-        setFileList([
-            {
-                name: 'list1',
-                id: "123121",
-                description: "this is file",
-                link: "url",
-                type: "public",
-                password: ""
-            },
-            {
-                name: 'list2',
-                id: "123122",
-                description: "this is file",
-                link: "url",
-                type: "private",
-                password: "1234"
-            },
-        ])
+        setLoad(true)
+        getFileList().then(()=>setLoad(false))
     }, []);
   return (
     <>
@@ -65,6 +64,16 @@ function Download() {
         </div>
       </form>
       <ul className="list-group list-group">
+        {
+            load && 
+            <li className="list-group-item">
+                <div className="d-flex justify-content-center">
+                    <div className="spinner-border" role="status">
+                        <span className="sr-only"></span>
+                    </div>
+                </div>  
+            </li>
+        }
         {
             fileList.map(file=>(
                 <li key={file.id} className="list-group-item" style={{ cursor: "pointer" }} onClick={()=>viewFile(file)}>

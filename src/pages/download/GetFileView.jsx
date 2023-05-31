@@ -12,7 +12,7 @@ const GetFileView = (props) => {
     setGetFile(!getFile);
   };
   const checkPass = () => {
-    if (selectItem.type === "private" && pass === selectItem.password) {
+    if (!selectItem.typePublic && pass === selectItem.password) {
       setCheck(true);
     }
   };
@@ -33,9 +33,10 @@ const GetFileView = (props) => {
               ></button>
             </div>
             <div className="modal-body">
-              <h4>{selectItem.name}</h4>
-              <p>{selectItem.description}</p>
-              {selectItem?.type == "private" ? (
+              <h4><b>Name: </b>{selectItem.name}</h4>
+              <p><b>keyword: </b>{selectItem.keyword}</p>
+              <p><b>description: </b>{selectItem.description}</p>
+              { (!selectItem.typePublic) ? (
                 <>
                   <div className="row">
                     <div className="col-md-10">
@@ -70,16 +71,18 @@ const GetFileView = (props) => {
               >
                 Close
               </button>
-              <button
+              <a
                 type="button"
+                target="_blank"
                 className={
                   selectItem?.type == "private" && !check
                     ? "btn btn-primary disabled"
                     : "btn btn-primary"
                 }
+                href={selectItem.path} rel="noreferrer"
               >
                 download file and close
-              </button>
+              </a>
             </div>
           </div>
         </div>

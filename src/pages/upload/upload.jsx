@@ -1,33 +1,26 @@
-import { ref, getDownloadURL } from "firebase/storage";
 import { useState } from "react";
-import { storage } from "../../config/firebase";
-import { uploadBytesResumable } from "firebase/storage";
-import { db } from "../../config/firebase";
 import { toast } from "react-toastify";
+import { uploadBytesResumable } from "firebase/storage";
+import { ref, getDownloadURL } from "firebase/storage";
 import { collection, addDoc } from "firebase/firestore";
+import { storage, db } from "../../config/firebase";
 
 function Upload() {
   const [progressPercent, setProgressPercent] = useState(0);
   const [cancelTask, setCancelTask] = useState(false);
   const [protsess, setProtsess] = useState(false);
-  const [fileType, setFileType] = useState("public");
   const [fileData, setFileData] = useState({
     name: "",
     keyword: "",
     password: "",
     path: "",
     typePublic: true,
+    description: ""
   });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const file = e.target[0]?.files[0];
-    setFileData({
-        name: e.target[1].value,
-        keyword: e.target[2].value,
-        typePublic: e.target[3].value,
-        password: e.target[4].value
-    })
 
     if (!file) {
         toast.error("plase choose file 🙁");
@@ -64,18 +57,20 @@ function Upload() {
         }
       },
       async () => {
-        getDownloadURL(storageRef).then((downloadURL) => {
-          setFileData({ ...fileData, path: downloadURL });
-        })
-        .then(async ()=>{
+        getDownloadURL(storageRef)
+        // .then((downloadURL) => {
+        //   setFileData({ ...fileData, path: downloadURL });
+        // })
+        .then(async (downloadURL)=>{
             try {
               await addDoc(collection(db, "filePath"), {
                 name: fileData.name,
                 keyword: fileData.keyword,
                 createDate: new Date(),
                 password: fileData.password,
-                path: fileData.path,
+                path: downloadURL,
                 typePublic: fileData.typePublic,
+                description: fileData.description
               }).then(() => {
                 
                 toast.success("Sucsessfully uploaded");
@@ -89,24 +84,20 @@ function Upload() {
         e.target[0].value = "";
         e.target[1].value = "";
         e.target[2].value = "";
-        // e.target[3].value = "true";
-        e.target[4].value = "";
+        e.target[3].value = "";
+        // e.target[4].value = "true";
+        e.target[5].value = "";
         setFileData({
             name: "",
             keyword: "",
             password: "",
             path: "",
             typePublic: true,
+            description: ""
         })
       }
     );
 };
-    const formChangeHandler = (e)=>{
-        setFileData({
-            ...fileData,
-            [e.target.name]: e.target.value
-        });
-    }
 
   return (
     <div className="card p-1">
@@ -160,9 +151,23 @@ function Upload() {
               type="text"
               id="name"
               name="name"
-              onChange={formChangeHandler}
+              onChange={e=>setFileData({...fileData, name: e.target.value})}
               className="form-control mb-1"
               placeholder="name"
+            />
+          </div>
+
+          <div className="mb-3">
+            <label htmlFor="description" className="form-label">
+              File description
+            </label>
+            <input
+              type="text"
+              id="description"
+              name="description"
+              onChange={e=>setFileData({...fileData, description: e.target.value})}
+              className="form-control mb-1"
+              placeholder="description"
             />
           </div>
 
@@ -175,27 +180,31 @@ function Upload() {
               className="form-control mb-1"
               id="keyword"
               name="keyword"
-              onChange={formChangeHandler}
+              onChange={e=>setFileData({...fileData, keyword: e.target.value})}
               placeholder="keyword"
             />
           </div>
 
           <div className="mb-3">
-            <label htmlFor="type" className="form-label">
+            <label htmlFor="typePublic" className="form-label">
               Select the file types{" "}
             </label>
             <select
-              value={fileType}
-              onChange={(e) => setFileType(e.target.value)}
+              onChange={(e)=>{
+                if(e.target.value=="true")
+                    setFileData({...fileData, typePublic: true})
+                else
+                    setFileData({...fileData, typePublic: false})
+              }}
               className="form-select"
-              name="type"
-              id="type"
+              name="typePublic"
+              id="typePublic"
             >
-              <option value="true">public</option>
-              <option value="false">private</option>
+              <option value={true}>public</option>
+              <option value={false}>private</option>
             </select>
           </div>
-          {fileType !== "public" ? (
+          {(!fileData.typePublic) ? (
             <div className="mb-3">
               <label htmlFor="password" className="form-label">
                 Password{" "}
@@ -203,6 +212,8 @@ function Upload() {
               <input
                 type="password"
                 id="password"
+                name="password"
+                onChange={e=>setFileData({...fileData, password: e.target.value})}
                 className="form-control mb-1"
                 placeholder="password for download"
               />
