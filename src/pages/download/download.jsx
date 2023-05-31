@@ -2,13 +2,7 @@ import { useState, useEffect } from "react";
 import GetFileView from './GetFileView';
 
 function Download() {
-    const [fileList, setFileList] = useState([
-        {
-            name: 'list1',
-            id: "123121",
-            description: "this is file"
-        }
-    ]);
+    const [fileList, setFileList] = useState([]);
     const [getFile, setGetFile] = useState(false);
     const [selectItem, setSelectItem] = useState();
     const viewFile = (item)=>{

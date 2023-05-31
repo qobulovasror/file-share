@@ -1,6 +1,8 @@
 import {Suspense, lazy, useState} from 'react';
 import { BrowserRouter, Route, Routes, Navigate, Link } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
 
+import 'react-toastify/dist/ReactToastify.css';
 import './App.css'
 
 const Download = lazy(()=>import('./pages/download/download'));
@@ -16,6 +18,7 @@ function App() {
   return (
     <Suspense fallback={<>Loading</>}>
       <BrowserRouter>
+      <ToastContainer/>
         <nav className="navbar bg-body-tertiary">
           <div className="container">
             <div className="container-fluid">
